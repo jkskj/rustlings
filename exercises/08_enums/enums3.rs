@@ -1,3 +1,5 @@
+#![allow(unused)]
+use std::arch::x86_64;
 struct Point {
     x: u64,
     y: u64,
@@ -5,6 +7,11 @@ struct Point {
 
 enum Message {
     // TODO: Implement the message variant types based on their usage below.
+    Resize { width: u64, height: u64 },
+    Move(Point),
+    Echo(String),
+    ChangeColor(u8, u8, u8),
+    Quit,
 }
 
 struct State {
@@ -42,11 +49,53 @@ impl State {
     fn process(&mut self, message: Message) {
         // TODO: Create a match expression to process the different message
         // variants using the methods defined above.
+        match message {
+            Message::Resize { width, height } => {
+                self.resize(width, height);
+            }
+            Message::Move(p) => {
+                self.move_position(p);
+            }
+            Message::Echo(m) => self.echo(m),
+            Message::ChangeColor(red, green, blue) => self.change_color(red, green, blue),
+            Message::Quit => {
+                self.quit();
+            }
+        }
     }
 }
 
 fn main() {
     // You can optionally experiment here.
+    let mut state = State {
+        width: 0,
+        height: 0,
+        position: Point { x: 0, y: 0 },
+        message: String::from("hello world"),
+        color: (0, 0, 0),
+        quit: false,
+    };
+
+    state.process(Message::Resize {
+        width: 10,
+        height: 30,
+    });
+    state.process(Message::Move(Point { x: 10, y: 15 }));
+    state.process(Message::Echo(String::from("Hello world!")));
+    state.process(Message::ChangeColor(255, 0, 255));
+    state.process(Message::Quit);
+    println!(
+        "{},{},{},{},{},{},{},{},{}",
+        state.width,
+        state.height,
+        state.position.x,
+        state.position.y,
+        state.message,
+        state.color.0,
+        state.color.1,
+        state.color.2,
+        state.quit
+    );
 }
 
 #[cfg(test)]
